@@ -43,7 +43,7 @@ defmodule IslandsEngine.Island do
   #   +-----------+
   #  1| X | X |   |
   #   +-----------+
-  #  2| X | X |   |
+  #  2|   |   |   |
   #   +-----------+
   defp offsets(:square), do: [{0,0}, {0,1}, {1,0}, {1,1}]
 
