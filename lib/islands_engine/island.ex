@@ -4,6 +4,8 @@ defmodule IslandsEngine.Island do
   @enforce_keys [:coordinates, :hit_coordinates]
   defstruct [:coordinates, :hit_coordinates]
 
+  def types(), do: [:atoll, :dot, :l_shape, :s_shape, :square]
+
   @doc """
   Builds an island given an island type and top left coordinate.
 
@@ -34,6 +36,35 @@ defmodule IslandsEngine.Island do
       # {:error, :invalid_coordinate}
       # {:error, :invalid_island_type}
       error -> error
+    end
+  end
+
+  @doc """
+  Determine whether islands overlap.
+
+  ## Examples
+
+    iex> alias IslandsEngine.{Coordinate, Island}
+    iex> {:ok, square_coordinate} = Coordinate.new(1,1)
+    iex> {:ok, square} = Island.new(:square, square_coordinate)
+    iex> {:ok, dot_coordinate} = Coordinate.new(1,2)
+    iex> {:ok, dot} = Island.new(:dot, dot_coordinate)
+    iex> Island.overlaps?(square, dot)
+    true
+  """
+  def overlaps?(existing_island, new_island), do:
+    # Disjointed sets share no members
+    not MapSet.disjoint?(existing_island.coordinates, new_island.coordinates)
+
+  def forested?(island), do:
+    MapSet.equal?(island.coordinates, island.hit_coordinates)
+
+  def guess(island, coordinate) do
+    case MapSet.member?(island.coordinates, coordinate) do
+      true ->
+        hit_coordinates = MapSet.put(island.hit_coordinates, coordinate)
+        {:hit, %{island | hit_coordinates: hit_coordinates}}
+      false -> :miss
     end
   end
 
