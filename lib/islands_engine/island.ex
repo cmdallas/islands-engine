@@ -14,17 +14,11 @@ defmodule IslandsEngine.Island do
     iex> IslandsEngine.Island.new(:unsupported_shape, %IslandsEngine.Coordinate{col: 6, row: 4})
     {:error, :invalid_island_type}
 
-    # /thinkingemoji Copied directly out of iex, but doctest still fails.
-    #iex> IslandsEngine.Island.new(:l_shape, %IslandsEngine.Coordinate{col: 6, row: 4})
-    {:ok, %IslandsEngine.Island{
-      coordinates: #MapSet<[
-        %IslandsEngine.Coordinate{col: 6, row: 4},
-        %IslandsEngine.Coordinate{col: 6, row: 5},
-        %IslandsEngine.Coordinate{col: 6, row: 6},
-        %IslandsEngine.Coordinate{col: 7, row: 6}
-      ]>,
-      hit_coordinates: #MapSet<[]>
-    }}
+    iex> {:ok, island} = IslandsEngine.Island.new(:l_shape, %IslandsEngine.Coordinate{col: 6, row: 4})
+    iex> island.coordinates
+    #MapSet<[%IslandsEngine.Coordinate{col: 6, row: 4}, %IslandsEngine.Coordinate{col: 6, row: 5}, %IslandsEngine.Coordinate{col: 6, row: 6}, %IslandsEngine.Coordinate{col: 7, row: 6}]>
+    iex> island.hit_coordinates
+    #MapSet<[]>
   """
   def new(type, %Coordinate{} = upper_left) do
     with [_|_] = offsets <- offsets(type),
