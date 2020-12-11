@@ -15,7 +15,7 @@ defmodule IslandsEngine.Board do
   end
 
   def all_islands_positioned?(board) do
-    Enum.all?(Islands.types, &(Map.has_key?(board, &1)))
+    Enum.all?(Island.types, &(Map.has_key?(board, &1)))
   end
 
   def guess(board, %Coordinate{} = coordinate) do
@@ -36,6 +36,7 @@ defmodule IslandsEngine.Board do
       case Island.guess(island, coordinate) do
         {:hit, island} -> {key, island}
         :miss -> false
+      end
     end)
   end
 
