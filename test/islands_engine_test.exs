@@ -1,6 +1,7 @@
 defmodule IslandsEngineTest do
   use ExUnit.Case
   doctest IslandsEngine
+  doctest IslandsEngine.Game
   doctest IslandsEngine.Island
   doctest IslandsEngine.Rules
 
