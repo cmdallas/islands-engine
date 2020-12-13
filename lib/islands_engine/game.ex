@@ -98,6 +98,39 @@ defmodule IslandsEngine.Game do
   end
 
   @doc """
+    iex> alias IslandsEngine.{Game, Rules}
+    iex> {:ok, game} = Game.start_link("Chris")
+    iex> Game.add_player(game, "Alexis")
+    iex> Game.set_islands(game, :player1)
+    {:error, :not_all_islands_positioned}
+    iex> Game.position_island(game, :player1, :atoll, 1, 1)
+    iex> Game.position_island(game, :player1, :dot, 1, 4)
+    iex> Game.position_island(game, :player1, :l_shape, 1, 5)
+    iex> Game.position_island(game, :player1, :s_shape, 5, 1)
+    iex> Game.position_island(game, :player1, :square, 5, 5)
+    :ok
+    iex> Game.set_islands(game, :player1)
+    iex> state = :sys.get_state(game)
+    iex> state.rules.player1
+    :islands_set
+    iex> state.rules.state
+    :players_set
+  """
+  def handle_call({:set_islands, player}, _from, state) do
+    board = player_board(state, player)
+    with {:ok, rules} <- Rules.check(state.rules, {:set_islands, player}),
+         true <- Board.all_islands_positioned?(board)
+    do
+      state
+      |> update_rules(rules)
+      |> reply_success({:ok, board})
+    else
+      :error -> {:reply, :error, state}
+      false -> {:reply, {:error, :not_all_islands_positioned}, state}
+    end
+  end
+
+  @doc """
     iex> alias IslandsEngine.Game
     iex> {:ok, game} = Game.start_link("Chris")
     iex> Game.add_player(game, "Alexis")
@@ -110,6 +143,9 @@ defmodule IslandsEngine.Game do
 
   def position_island(game, player, key, row, col) when player in @players, do:
     GenServer.call(game, {:position_island, player, key, row, col})
+
+  def set_islands(game, player) when player in @players, do:
+    GenServer.call(game, {:set_islands, player})
 
   defp reply_success(state, reply), do: {:reply, reply, state}
 
